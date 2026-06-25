@@ -1,0 +1,46 @@
+<section class="step">
+  <h2>Basic info</h2>
+  <p class="step-hint">Core details about the product.</p>
+
+  <label class="field">
+    <span class="field-label">Name</span>
+    <input class="field-input" [formField]="basicForm.name" />
+    <app-field-error [field]="basicForm.name" />
+  </label>
+
+  <label class="field">
+    <span class="field-label">Type</span>
+    <select class="field-select" [formField]="basicForm.type">
+      <option value="">{{ lookups.productTypes.isLoading() ? 'Loading…' : 'Select a type…' }}</option>
+      @for (t of lookups.productTypes.value(); track t) {
+        <option [value]="t">{{ t }}</option>
+      }
+    </select>
+    <app-field-error [field]="basicForm.type" />
+  </label>
+
+  <label class="field">
+    <span class="field-label">Data product creator</span>
+    <app-people-picker
+      [value]="model().creator"
+      (valueChange)="setCreator($event)"
+    />
+    <app-field-error [field]="basicForm.creator" />
+  </label>
+
+  <label class="field">
+    <span class="field-label">Ownership</span>
+    <select class="field-select" [formField]="basicForm.ownership">
+      <option value="">{{ lookups.ownership.isLoading() ? 'Loading…' : 'Select ownership…' }}</option>
+      @for (o of lookups.ownership.value(); track o) {
+        <option [value]="o">{{ o }}</option>
+      }
+    </select>
+    <app-field-error [field]="basicForm.ownership" />
+  </label>
+
+  <div class="step-actions">
+    <button type="button" class="btn-secondary" (click)="back()">Back</button>
+    <button type="button" class="btn-primary" (click)="next()">Next</button>
+  </div>
+</section>

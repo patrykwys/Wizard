@@ -1,0 +1,26 @@
+<section class="step">
+  <h2>Description &amp; details</h2>
+  <p class="step-hint">Describe the product, add tags, and link a reference.</p>
+
+  <label class="field">
+    <span class="field-label">Description</span>
+    <textarea class="field-textarea" [formField]="descForm.description"></textarea>
+    <app-field-error [field]="descForm.description" />
+  </label>
+
+  <div class="field">
+    <span class="field-label">Tags</span>
+    <app-tag-input [tags]="model().tags" (tagsChange)="setTags($event)" />
+  </div>
+
+  <label class="field">
+    <span class="field-label">URL</span>
+    <input class="field-input" [formField]="descForm.url" placeholder="https://…" />
+    <app-field-error [field]="descForm.url" />
+  </label>
+
+  <div class="step-actions">
+    <button type="button" class="btn-secondary" (click)="back()">Back</button>
+    <button type="button" class="btn-primary" (click)="next()">Next</button>
+  </div>
+</section>

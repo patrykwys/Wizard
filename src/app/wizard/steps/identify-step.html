@@ -1,0 +1,29 @@
+<section class="step">
+  <h2>Identify product</h2>
+  <p class="step-hint">
+    Find your product by Application ID, or classify it with the Enterprise Data
+    Taxonomy. You can pick categories across more than one branch.
+  </p>
+
+  <label class="field">
+    <span class="field-label">Application ID</span>
+    <input class="field-input" [formField]="identifyForm.appId" placeholder="e.g. APP-555555" />
+  </label>
+
+  <span class="identify-or">OR</span>
+
+  <div class="field">
+    <span class="field-label">Enterprise Data Taxonomy</span>
+    <app-taxonomy-picker
+      [selection]="model().categories"
+      (selectionChange)="setCategories($event)"
+    />
+  </div>
+
+  <app-field-error [field]="identifyForm" />
+
+  <div class="step-actions">
+    <span></span>
+    <button type="button" class="btn-primary" (click)="next()">Next</button>
+  </div>
+</section>

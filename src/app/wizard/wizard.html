@@ -1,0 +1,68 @@
+<header class="wizard-header">
+  <p class="wizard-crumb">Register a New Data Product</p>
+
+  <div class="wizard-titlebar">
+    <div class="wizard-title-group">
+      <h1>Register a Data Product</h1>
+      <span class="wizard-badge">POC — Manual Entry</span>
+    </div>
+    <div class="wizard-save">
+      <span class="wizard-saved">{{ savedLabel() }}</span>
+      <button type="button" class="btn-secondary" (click)="save()">Save draft</button>
+    </div>
+  </div>
+
+  <div
+    class="wizard-progress"
+    role="progressbar"
+    [attr.aria-valuenow]="store.progress()"
+    aria-valuemin="0"
+    aria-valuemax="100"
+  >
+    <div class="wizard-progress-fill" [style.width.%]="store.progress()"></div>
+  </div>
+
+  <nav class="stepper" aria-label="Registration steps">
+    @for (page of pages; track page.id; let i = $index) {
+      <button
+        type="button"
+        class="stepper-step"
+        [class.is-active]="store.currentPage() === page.id"
+        [class.is-done]="store.completedPages().includes(page.id)"
+        (click)="goTo(page.id)"
+      >
+        <span class="stepper-circle">
+          @if (store.completedPages().includes(page.id)) {
+            <span aria-hidden="true">✓</span>
+          } @else {
+            {{ i + 1 }}
+          }
+        </span>
+        <span class="stepper-label">{{ page.label }}</span>
+      </button>
+    }
+  </nav>
+</header>
+
+<main class="card">
+  @switch (store.currentPage()) {
+    @case ('identify') {
+      <app-identify-step />
+    }
+    @case ('basic') {
+      <app-basic-step />
+    }
+    @case ('description') {
+      <app-description-step />
+    }
+    @case ('sources') {
+      <app-sources-step />
+    }
+    @case ('access') {
+      <app-access-step />
+    }
+    @case ('review') {
+      <app-review-step />
+    }
+  }
+</main>

@@ -1,0 +1,68 @@
+<section class="step">
+  <h2>Access &amp; classification</h2>
+  <p class="step-hint">
+    Define who can discover and request access to this product, and how it is
+    classified for compliance.
+  </p>
+
+  <div class="field">
+    <span class="field-label">Visibility</span>
+    <div class="option-grid">
+      <button
+        type="button"
+        class="option-card"
+        [class.is-selected]="model().visibility === 'internal'"
+        (click)="setVisibility('internal')"
+      >
+        <span class="option-card-title">Organization-wide</span>
+        <span class="option-card-desc">Anyone in the organization can discover this product and request access.</span>
+      </button>
+      <button
+        type="button"
+        class="option-card"
+        [class.is-selected]="model().visibility === 'private'"
+        (click)="setVisibility('private')"
+      >
+        <span class="option-card-title">Private</span>
+        <span class="option-card-desc">Only explicitly invited users and groups can see and access this product.</span>
+      </button>
+      <button
+        type="button"
+        class="option-card"
+        [class.is-selected]="model().visibility === 'public'"
+        (click)="setVisibility('public')"
+      >
+        <span class="option-card-title">Public</span>
+        <span class="option-card-desc">Discoverable outside the organization.</span>
+      </button>
+    </div>
+    <app-field-error [field]="accessForm.visibility" />
+  </div>
+
+  <div class="field">
+    <span class="field-label">Data classification</span>
+    <div class="option-grid">
+      @for (c of classifications; track c) {
+        <button
+          type="button"
+          class="option-card classification-card"
+          [class.is-selected]="model().classification === c"
+          (click)="setClassification(c)"
+        >
+          <span class="option-card-title">{{ c }}</span>
+        </button>
+      }
+    </div>
+    <app-field-error [field]="accessForm.classification" />
+  </div>
+
+  <div class="field">
+    <span class="field-label">Tags</span>
+    <app-tag-input [tags]="model().tags" (tagsChange)="setTags($event)" />
+  </div>
+
+  <div class="step-actions">
+    <button type="button" class="btn-secondary" (click)="back()">Back</button>
+    <button type="button" class="btn-primary" (click)="next()">Next</button>
+  </div>
+</section>

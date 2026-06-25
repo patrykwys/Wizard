@@ -1,0 +1,5 @@
+/* Single global stylesheet entry (referenced once from angular.json).
+   Order matters: tokens -> reset -> base. */
+@import "./tokens.css";
+@import "./reset.css";
+@import "./base.css";

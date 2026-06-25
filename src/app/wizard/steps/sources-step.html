@@ -1,0 +1,53 @@
+<section class="step">
+  <h2>Sources</h2>
+  <p class="step-hint">Add one or more upstream sources for this product.</p>
+
+  @for (item of sourcesForm.items; track $index; let i = $index) {
+    <div class="source-card">
+      <div class="source-head" (click)="toggle(model().items[i].id)">
+        <span class="source-head-title">
+          {{ model().items[i].kind || 'New source' }}
+          @if (model().items[i].location) {
+            — {{ model().items[i].location }}
+          }
+        </span>
+        <button type="button" class="btn-ghost" (click)="remove(i); $event.stopPropagation()">
+          Remove
+        </button>
+      </div>
+
+      @if (isOpen(model().items[i].id)) {
+        <div class="source-body">
+          <label class="field">
+            <span class="field-label">Type</span>
+            <select class="field-select" [formField]="item.kind">
+              <option value="">{{ lookups.sourceKinds.isLoading() ? 'Loading…' : 'Select a type…' }}</option>
+              @for (k of lookups.sourceKinds.value(); track k) {
+                <option [value]="k">{{ k }}</option>
+              }
+            </select>
+            <app-field-error [field]="item.kind" />
+          </label>
+
+          <label class="field">
+            <span class="field-label">Location</span>
+            <input class="field-input" [formField]="item.location" placeholder="URL or path" />
+            <app-field-error [field]="item.location" />
+          </label>
+
+          <label class="field">
+            <span class="field-label">Note</span>
+            <input class="field-input" [formField]="item.note" />
+          </label>
+        </div>
+      }
+    </div>
+  }
+
+  <button type="button" class="btn-secondary" (click)="add()">+ Add source</button>
+
+  <div class="step-actions">
+    <button type="button" class="btn-secondary" (click)="back()">Back</button>
+    <button type="button" class="btn-primary" (click)="next()">Next</button>
+  </div>
+</section>

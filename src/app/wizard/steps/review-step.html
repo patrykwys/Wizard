@@ -1,0 +1,85 @@
+<section class="step">
+  <h2>Review &amp; submit</h2>
+  <p class="step-hint">Check everything, edit any section, then submit.</p>
+
+  <div class="review-block">
+    <div class="review-block-head">
+      <strong>Identify</strong>
+      <button type="button" class="btn-ghost" (click)="edit('identify')">Edit</button>
+    </div>
+    <div class="review-row">
+      <span class="review-key">Application ID</span>
+      <span>{{ store.draft().identify.appId || '—' }}</span>
+    </div>
+    <div class="review-row">
+      <span class="review-key">Categories</span>
+      <span>
+        @if (store.draft().identify.categories.length) {
+          {{ identifyCategoryLabels() }}
+        } @else {
+          —
+        }
+      </span>
+    </div>
+  </div>
+
+  <div class="review-block">
+    <div class="review-block-head">
+      <strong>Basic info</strong>
+      <button type="button" class="btn-ghost" (click)="edit('basic')">Edit</button>
+    </div>
+    <div class="review-row"><span class="review-key">Name</span><span>{{ store.draft().basic.name || '—' }}</span></div>
+    <div class="review-row"><span class="review-key">Type</span><span>{{ store.draft().basic.type || '—' }}</span></div>
+    <div class="review-row"><span class="review-key">Creator</span><span>{{ store.draft().basic.creator || '—' }}</span></div>
+    <div class="review-row"><span class="review-key">Ownership</span><span>{{ store.draft().basic.ownership || '—' }}</span></div>
+  </div>
+
+  <div class="review-block">
+    <div class="review-block-head">
+      <strong>Description</strong>
+      <button type="button" class="btn-ghost" (click)="edit('description')">Edit</button>
+    </div>
+    <div class="review-row"><span class="review-key">Description</span><span>{{ store.draft().description.description || '—' }}</span></div>
+    <div class="review-row"><span class="review-key">Tags</span><span>{{ store.draft().description.tags.join(', ') || '—' }}</span></div>
+    <div class="review-row"><span class="review-key">URL</span><span>{{ store.draft().description.url || '—' }}</span></div>
+  </div>
+
+  <div class="review-block">
+    <div class="review-block-head">
+      <strong>Sources</strong>
+      <button type="button" class="btn-ghost" (click)="edit('sources')">Edit</button>
+    </div>
+    @if (store.sourcesEntities().length) {
+      @for (s of store.sourcesEntities(); track s.id) {
+        <div class="review-row">
+          <span class="review-key">{{ s.kind || '—' }}</span>
+          <span>{{ s.location || '—' }}</span>
+        </div>
+      }
+    } @else {
+      <div class="review-row"><span>—</span></div>
+    }
+  </div>
+
+  <div class="review-block">
+    <div class="review-block-head">
+      <strong>Access</strong>
+      <button type="button" class="btn-ghost" (click)="edit('access')">Edit</button>
+    </div>
+    <div class="review-row"><span class="review-key">Visibility</span><span>{{ store.draft().access.visibility }}</span></div>
+    <div class="review-row"><span class="review-key">Classification</span><span>{{ store.draft().access.classification }}</span></div>
+    <div class="review-row"><span class="review-key">Tags</span><span>{{ store.draft().access.tags.join(', ') || '—' }}</span></div>
+  </div>
+
+  <div class="step-actions">
+    <button type="button" class="btn-secondary" (click)="edit('access')">Back</button>
+    <button
+      type="button"
+      class="btn-primary"
+      [disabled]="!store.allRequiredComplete()"
+      (click)="submit()"
+    >
+      Submit
+    </button>
+  </div>
+</section>

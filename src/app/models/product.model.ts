@@ -32,7 +32,6 @@ export const REQUIRED_PAGES: readonly ProductPage[] = [
 
 export interface IdentifyData {
   appId: string;
-  productName: string;
   categories: TaxonomySelection[];
 }
 
@@ -43,17 +42,29 @@ export interface BasicInfoData {
   ownership: string;
 }
 
+// A titled document link (multiple per product).
+export interface DocumentLink {
+  title: string;
+  link: string;
+}
+
 export interface DescriptionData {
   description: string;
-  url: string;
+  documents: DocumentLink[];
   tags: string[];
 }
 
 export interface AccessData {
   visibility: Visibility;
   classification: Classification;
+  compliance: string[]; // regulated-data tags: PII, GDPR, SOX, HIPAA, PCI-DSS
+  accessProcess: 'approval' | 'auto';
+  adGroup: string; // only when accessProcess === 'approval'
   tags: string[];
 }
+
+// Regulated-data options for the Access step (hardcoded).
+export const COMPLIANCE_TAGS = ['PII', 'GDPR', 'SOX', 'HIPAA', 'PCI-DSS'];
 
 export type Visibility = 'private' | 'internal' | 'public';
 export type Classification =
@@ -65,25 +76,52 @@ export type Classification =
 // Sources are managed as a keyed entity collection, not as part of the draft.
 export interface SourceItem {
   id: string;
-  kind: string;
+  name: string; // optional friendly name; falls back to "Unnamed Asset"
+  kind: string; // asset type (category) — drives the platform options
+  platform: string; // platform/tool, dependent on `kind`
   location: string;
   note: string;
 }
+
+// Page-level delivery/refresh metadata for the Sources step. One set per
+// product (NOT per asset), with hardcoded option lists.
+export interface DeliveryData {
+  refreshFrequency: string;
+  refreshMethod: string; // only meaningful when refreshFrequency === 'Scheduled'
+  slaTarget: string;
+  typicalDataLag: string;
+}
+
+export const INITIAL_DELIVERY: DeliveryData = {
+  refreshFrequency: '',
+  refreshMethod: '',
+  slaTarget: '',
+  typicalDataLag: '',
+};
 
 // The serializable, per-page draft. Sources live in the entity collection.
 export interface ProductDraft {
   identify: IdentifyData;
   basic: BasicInfoData;
   description: DescriptionData;
+  delivery: DeliveryData;
   access: AccessData;
 }
 
 // Initial values: never null/undefined (Signal Forms requirement).
 export const INITIAL_DRAFT: ProductDraft = {
-  identify: { appId: '', categories: [],productName:''},
+  identify: { appId: '', categories: [] },
   basic: { name: '', type: '', creator: '', ownership: '' },
-  description: { description: '', url: '', tags: [] },
-  access: { visibility: 'internal', classification: 'internal', tags: [] },
+  description: { description: '', documents: [], tags: [] },
+  delivery: INITIAL_DELIVERY,
+  access: {
+    visibility: 'internal',
+    classification: 'internal',
+    compliance: [],
+    accessProcess: 'approval',
+    adGroup: '',
+    tags: [],
+  },
 };
 
 // A node in the Enterprise Data Taxonomy tree (loaded from the API).
@@ -104,4 +142,11 @@ export interface Person {
   id: string;
   name: string;
   role: string;
+}
+
+// A product returned by the "Search products" lookup on the identify step.
+export interface ProductHit {
+  appId: string;
+  name: string;
+  taxonomy: string;
 }

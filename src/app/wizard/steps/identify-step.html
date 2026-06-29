@@ -1,29 +1,87 @@
 <section class="step">
   <h2>Identify product</h2>
   <p class="step-hint">
-    Find your product by Application ID, or classify it with the Enterprise Data
-    Taxonomy. You can pick categories across more than one branch.
+    Find your product by Application ID or Enterprise Data Taxonomy, then select
+    it from the results — or create a new one.
   </p>
 
-  <label class="field">
-    <span class="field-label">Application ID</span>
-    <input class="field-input" [formField]="identifyForm.appId" placeholder="e.g. APP-555555" />
-  </label>
+  <div class="identify-bar">
+    <label class="identify-field identify-appid">
+      <span class="field-label">Application ID</span>
+      <input class="field-input" [formField]="identifyForm.appId" placeholder="e.g. APP-555555" />
+    </label>
 
-  <span class="identify-or">OR</span>
+    <span class="identify-or">OR</span>
 
-  <div class="field">
-    <span class="field-label">Enterprise Data Taxonomy</span>
-    <app-taxonomy-picker
-      [selection]="model().categories"
-      (selectionChange)="setCategories($event)"
-    />
+    <div class="identify-field identify-grow">
+      <span class="field-label">Enterprise Data Taxonomy</span>
+      <app-taxonomy-picker
+        [selection]="model().categories"
+        (selectionChange)="setCategories($event)"
+      />
+    </div>
+
+    <div class="identify-actions">
+      <button type="button" class="btn-primary" (click)="search()">
+        <lucide-icon [img]="icons.Search" [size]="16" />
+        Search products
+      </button>
+      <button type="button" class="btn-ghost" (click)="clear()">Clear</button>
+    </div>
   </div>
+
+  <p class="identify-tip">
+    Tip: enter at least one search criterion. If your product doesn’t exist yet,
+    use “Create new product” after searching.
+  </p>
 
   <app-field-error [field]="identifyForm" />
 
+  @if (searched()) {
+    <div class="results">
+      @if (results.isLoading()) {
+        <p class="picker-empty">Searching…</p>
+      } @else {
+        <p class="results-count">{{ results.value().length }} product(s) found</p>
+
+        @for (product of results.value(); track product.appId) {
+          <button
+            type="button"
+            class="result-row"
+            [class.is-selected]="model().appId === product.appId"
+            (click)="selectProduct(product)"
+          >
+            <span class="result-main">
+              <span class="result-name">{{ product.name }}</span>
+              <span class="result-meta">{{ product.appId }} · {{ product.taxonomy }}</span>
+            </span>
+            <span class="result-select">
+              {{ model().appId === product.appId ? 'Selected' : 'Select' }}
+            </span>
+          </button>
+        }
+
+        <div class="results-create">
+          <div>
+            <strong>Can’t find your product?</strong>
+            <p class="result-meta">If it doesn’t exist yet, register a new one from scratch.</p>
+          </div>
+          <button type="button" class="btn-secondary" (click)="createNew()">+ Create new product</button>
+        </div>
+      }
+    </div>
+  }
+
   <div class="step-actions">
     <span></span>
-    <button type="button" class="btn-primary" (click)="next()">Next</button>
+    <button
+      type="button"
+      class="btn-primary"
+      [disabled]="identifyForm().invalid()"
+      (click)="next()"
+    >
+      Next
+      <lucide-icon [img]="icons.ChevronRight" [size]="16" />
+    </button>
   </div>
 </section>

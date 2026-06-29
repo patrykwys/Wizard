@@ -363,3 +363,63 @@ body {
   width: 140px;
   color: var(--color-text-secondary);
 }
+
+/* ---- Field hint (sub-label under a field) ---- */
+.field-hint {
+  display: block;
+  margin-top: var(--space-3);
+  font-size: var(--font-size-sm);
+  color: var(--color-text-secondary);
+}
+
+/* ---- Toggleable chips (multi-select, e.g. compliance tags) ---- */
+.chip-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-4);
+  margin-top: var(--space-4);
+}
+
+.chip-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-3) var(--space-6);
+  background: var(--color-surface-muted);
+  color: var(--color-text-secondary);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-pill);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+  transition: var(--transition-quick);
+}
+
+.chip-toggle:hover {
+  border-color: var(--color-primary);
+}
+
+.chip-toggle.is-selected {
+  background: var(--color-action-tint);
+  color: var(--color-primary);
+  border-color: var(--color-primary);
+}
+
+/* ---- Full-width dashed "add another" button ---- */
+.btn-add-block {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-3);
+  width: 100%;
+  min-height: var(--size-control-xl);
+  border: 1px dashed var(--color-border-dashed);
+  border-radius: var(--radius-inner);
+  color: var(--color-primary);
+  font-weight: var(--font-weight-medium);
+  transition: var(--transition-quick);
+}
+
+.btn-add-block:hover {
+  background: var(--color-action-tint);
+  border-color: var(--color-primary);
+}

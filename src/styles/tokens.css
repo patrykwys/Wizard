@@ -1,51 +1,80 @@
 /* ============================================================
-   Design tokens — single source of truth.
-   Components author CSS with var(--token); no magic numbers.
-   Authored as one :root so a prefers-color-scheme override can
-   be layered later without touching components.
+   Design tokens — the single source of truth for every value.
+   Components author CSS with var(--token) only; no magic numbers.
+   One :root block so a prefers-color-scheme override can be layered
+   later without touching components.
    ============================================================ */
 :root {
-  /* -- Brand & action (green) -- */
-  --color-primary: #368827;
-  --color-primary-hover: #2d6b32;
+  /* -- Brand scale (green) -- */
+  --color-primary-50: #f0faf0;
+  --color-primary-100: #d9f0d9;
+  --color-primary-200: #aaddaa;
+  --color-primary-300: #76c576;
+  --color-primary-400: #4ba63f;
+  --color-primary-500: #368827;
+  --color-primary-600: #2d6b32;
+  --color-primary-700: #1f4d23;
+  --color-primary-900: #044014;
+
+  --color-primary: var(--color-primary-500);
+  --color-primary-hover: var(--color-primary-600);
   --color-primary-gradient-start: #388841;
   --color-action: var(--color-primary);
-  --color-action-tint: #f0faf0;
-  --color-action-glow: rgba(54, 136, 39, 0.35);
-  --color-action-glow-soft: rgba(54, 136, 39, 0.30);
-  --color-header-bg: #044014;
+  --color-action-tint: var(--color-primary-50);
+  --color-header-bg: var(--color-primary-900);
 
-  /* -- Neutrals (surfaces, text, borders) -- */
+  /* -- Neutral scale -- */
+  --color-gray-0: #ffffff;
+  --color-gray-50: #f7f6f4;
+  --color-gray-100: #f3f3f5;
+  --color-gray-200: #e1e5e9;
+  --color-gray-300: #c8d0d8;
+  --color-gray-400: #9e9e9e;
+  --color-gray-500: #767676;
+  --color-gray-600: #666666;
+  --color-gray-700: #3f3f3f;
+  --color-gray-800: #262626;
+  --color-gray-900: #1a1a1a;
+
+  /* -- Surfaces, text, borders -- */
   --color-page-bg: #f5f3f0;
-  --color-card-bg: #ffffff;
-  --color-field-bg: #f3f3f5;
-  --color-surface-muted: #f3f3f5;
-  --color-text-primary: #1a1a1a;
-  --color-text-secondary: #666666;
-  --color-text-muted: #9e9e9e;
+  --color-card-bg: var(--color-gray-0);
+  --color-field-bg: var(--color-gray-100);
+  --color-surface-muted: var(--color-gray-100);
+  --color-surface-sunken: var(--color-gray-50);
+  --color-text-primary: var(--color-gray-900);
+  --color-text-secondary: var(--color-gray-600);
+  --color-text-muted: var(--color-gray-400);
   --color-text-placeholder: #99a1af;
+  --color-text-link: var(--color-primary);
   --color-text-on-dark: #ffffff;
   --color-text-on-dark-muted: rgba(255, 255, 255, 0.85);
-  --color-border: #e1e5e9;
-  --color-border-dashed: #c8d0d8;
+  --color-border: var(--color-gray-200);
+  --color-border-strong: var(--color-gray-300);
+  --color-border-dashed: var(--color-gray-300);
   --color-border-on-dark: rgba(255, 255, 255, 0.12);
-  --color-divider: #e1e5e9;
+  --color-divider: var(--color-gray-200);
 
   /* -- Semantic / status -- */
   --color-success: var(--color-primary);
   --color-success-tint: var(--color-action-tint);
   --color-danger: #c62828;
+  --color-danger-hover: #a51f1f;
   --color-danger-tint: #fdecec;
   --color-warning: #b76e00;
   --color-warning-tint: #fff4e0;
   --color-info: #1e4a8a;
   --color-info-tint: #e6efff;
   --color-overlay: rgba(0, 0, 0, 0.45);
-  --color-focus-ring: var(--color-action-glow);
+
+  /* -- Focus & selection (solid, no glow) -- */
+  --color-focus: var(--color-primary);
+  --focus-outline-width: 2px;
+  --focus-outline-offset: 2px;
 
   /* -- Typography --
-     Improved over the spec: a real system stack instead of a bare
-     "Sans" so it renders crisply with no webfont dependency. */
+     A real system stack (improved over the spec's bare "Sans") so it
+     renders crisply with no webfont dependency. */
   --font-family-sans: system-ui, -apple-system, "Segoe UI", Roboto,
     "Helvetica Neue", Arial, sans-serif;
   --font-family-mono: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
@@ -59,17 +88,21 @@
   --font-size-2xl: 22px;
   --font-size-3xl: 24px;
   --font-size-4xl: 28px;
+  --font-size-5xl: 34px;
 
   --font-weight-regular: 400;
   --font-weight-medium: 500;
   --font-weight-semibold: 600;
   --font-weight-bold: 700;
 
+  --line-height-none: 1;
   --line-height-tight: 1.2;
   --line-height-snug: 1.3;
   --line-height-normal: 1.5;
   --line-height-relaxed: 1.6;
   --letter-spacing-tight: -0.5px;
+  --letter-spacing-normal: 0;
+  --letter-spacing-wide: 0.4px;
 
   /* -- Spacing (4px base) -- */
   --space-0: 0;
@@ -87,16 +120,28 @@
   --space-12: 48px;
   --space-13: 64px;
   --space-14: 80px;
+  --space-15: 96px;
+  --space-16: 128px;
 
-  /* -- Sizing (control heights) -- */
+  /* -- Sizing -- */
+  --size-control-xs: 28px;
   --size-control-sm: 32px;
   --size-control-md: 36px;
   --size-control-lg: 40px;
   --size-control-xl: 48px;
+  --size-icon-xs: 12px;
   --size-icon-sm: 16px;
   --size-icon-md: 20px;
   --size-icon-lg: 28px;
-  --container-max: 1200px;
+  --size-icon-xl: 36px;
+  --container-sm: 640px;
+  --container-md: 920px;
+  --container-lg: 1200px;
+  --container-max: var(--container-lg);
+
+  /* -- Border widths -- */
+  --border-width-hairline: 1px;
+  --border-width-thick: 2px;
 
   /* -- Border radii -- */
   --radius-xs: 4px;
@@ -105,6 +150,7 @@
   --radius-lg: 10px;
   --radius-xl: 14px;
   --radius-2xl: 32px;
+  --radius-3xl: 40px;
   --radius-pill: 9999px;
   --radius-circle: 50%;
   --radius-card: var(--radius-2xl);
@@ -113,20 +159,31 @@
   --radius-field: var(--radius-md);
 
   /* -- Shadows -- */
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.06);
+  --shadow-md: 0 2px 8px rgba(0, 0, 0, 0.10);
+  --shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.12);
   --shadow-card: 0 4px 40px rgba(0, 0, 0, 0.10);
   --shadow-dropdown: 0 4px 16px rgba(0, 0, 0, 0.12);
-  --shadow-step-active: 0 2px 8px var(--color-action-glow);
-  --shadow-submit-hover: 0 4px 12px var(--color-action-glow-soft);
-  --shadow-focus-ring: 0 0 0 3px var(--color-focus-ring);
+  /* Solid 2px inner ring for a selected card (a border, not a glow). */
+  --shadow-selected-ring: inset 0 0 0 2px var(--color-primary);
+
+  /* -- Opacity -- */
+  --opacity-disabled: 0.5;
+  --opacity-muted: 0.7;
 
   /* -- Motion -- */
-  --ease-standard: ease;
-  --duration-quick: 200ms;
+  --ease-standard: cubic-bezier(0.2, 0, 0.2, 1);
+  --ease-out: cubic-bezier(0, 0, 0.2, 1);
+  --ease-in-out: cubic-bezier(0.4, 0, 0.2, 1);
+  --duration-quick: 150ms;
+  --duration-normal: 200ms;
+  --duration-slow: 320ms;
   --duration-progress: 400ms;
   --transition-quick: all var(--duration-quick) var(--ease-standard);
 
   /* -- Layering -- */
   --z-base: 1;
+  --z-sticky: 50;
   --z-header: 100;
   --z-dropdown: 200;
   --z-overlay: 900;

@@ -6,6 +6,8 @@ import {
   linkedSignal,
 } from '@angular/core';
 import { form, FormField, required, submit } from '@angular/forms/signals';
+import { LucideAngularModule } from 'lucide-angular';
+import { ICONS } from '../../shared/icons';
 import { injectDispatch } from '@ngrx/signals/events';
 import { Person } from '../../models/product.model';
 import { LookupStore } from '../../store/lookup.store';
@@ -17,10 +19,11 @@ import { PeoplePicker } from '../../shared/people-picker';
 @Component({
   selector: 'app-basic-step',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [FormField, FieldError, PeoplePicker],
+  imports: [FormField, FieldError, PeoplePicker, LucideAngularModule],
   templateUrl: './basic-step.html',
 })
 export class BasicStep {
+  protected readonly icons = ICONS;
   private readonly store = inject(ProductDraftStore);
   private readonly dispatch = injectDispatch(wizardEvents);
   protected readonly lookups = inject(LookupStore);

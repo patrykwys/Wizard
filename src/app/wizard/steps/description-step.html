@@ -1,26 +1,82 @@
 <section class="step">
   <h2>Description &amp; details</h2>
-  <p class="step-hint">Describe the product, add tags, and link a reference.</p>
+  <p class="step-hint">Describe the product so others understand what it is and how to use it.</p>
 
   <label class="field">
     <span class="field-label">Description</span>
-    <textarea class="field-textarea" [formField]="descForm.description"></textarea>
+    <textarea
+      class="field-textarea"
+      [formField]="descForm.description"
+    ></textarea>
+    <span class="char-count" [class.is-limit]="descriptionCount() > maxDescription">
+      {{ descriptionCount() }}/{{ maxDescription }}
+    </span>
+    <span class="field-hint">A short summary of what this data product contains and its purpose.</span>
     <app-field-error [field]="descForm.description" />
   </label>
 
   <div class="field">
     <span class="field-label">Tags</span>
     <app-tag-input [tags]="model().tags" (tagsChange)="setTags($event)" />
+    <span class="field-hint">Keywords that make this product easier to find in the catalog.</span>
   </div>
 
-  <label class="field">
-    <span class="field-label">URL</span>
-    <input class="field-input" [formField]="descForm.url" placeholder="https://…" />
-    <app-field-error [field]="descForm.url" />
-  </label>
+  <div class="field">
+    <span class="field-label">Documentation Links</span>
+
+    @if (model().documents.length) {
+      <ul class="doc-list">
+        @for (doc of model().documents; track $index; let i = $index) {
+          <li class="doc-item">
+            <div class="doc-item-main">
+              <span class="doc-item-title">{{ doc.title || 'Untitled' }}</span>
+              <a class="doc-item-link" [href]="doc.link" target="_blank" rel="noopener">{{ doc.link }}</a>
+            </div>
+            <button type="button" class="doc-remove" (click)="removeDocument(i)" aria-label="Remove link">✕</button>
+          </li>
+        }
+      </ul>
+    }
+
+    <input
+      class="field-input"
+      [value]="docTitle()"
+      (input)="docTitle.set($any($event.target).value)"
+      placeholder="Link title…"
+    />
+    <div class="doc-link-row">
+      <input
+        class="field-input doc-link"
+        [value]="docLink()"
+        (input)="docLink.set($any($event.target).value)"
+        (keydown.enter)="addLink()"
+        placeholder="URL…"
+      />
+      <button
+        type="button"
+        class="btn-ghost doc-add"
+        [disabled]="!canAddLink()"
+        (click)="addLink()"
+      >
+        <lucide-icon [img]="icons.Plus" [size]="16" />
+        Add Link
+      </button>
+    </div>
+  </div>
 
   <div class="step-actions">
-    <button type="button" class="btn-secondary" (click)="back()">Back</button>
-    <button type="button" class="btn-primary" (click)="next()">Next</button>
+    <button type="button" class="btn-secondary" (click)="back()">
+      <lucide-icon [img]="icons.ChevronLeft" [size]="16" />
+      Back
+    </button>
+    <button
+      type="button"
+      class="btn-primary"
+      [disabled]="descForm().invalid()"
+      (click)="next()"
+    >
+      Next
+      <lucide-icon [img]="icons.ChevronRight" [size]="16" />
+    </button>
   </div>
 </section>

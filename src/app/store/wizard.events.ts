@@ -1,13 +1,6 @@
 import { type } from '@ngrx/signals';
 import { eventGroup } from '@ngrx/signals/events';
-import {
-  AccessData,
-  BasicInfoData,
-  DescriptionData,
-  IdentifyData,
-  ProductPage,
-  SourceItem,
-} from '../models/product.model';
+import { ProductDraft, ProductPage, SourceItem } from '../models/product.model';
 
 // A single, readable inventory of everything that can happen in the wizard.
 // Pages dispatch these; the store decides what each one does.
@@ -15,13 +8,9 @@ export const wizardEvents = eventGroup({
   source: 'Product Wizard',
   events: {
     // Fired continuously as a page is edited (drives autosave). Pass-through
-    // section refs keep the store/linkedSignal round-trip stable.
-    draftPatched: type<Partial<{
-      identify: IdentifyData;
-      basic: BasicInfoData;
-      description: DescriptionData;
-      access: AccessData;
-    }>>(),
+    // section refs keep the store/linkedSignal round-trip stable. Typed as a
+    // Partial of the whole draft so new sections need no change here.
+    draftPatched: type<Partial<ProductDraft>>(),
 
     // Sources are an entity collection; committed as a whole array.
     sourcesChanged: type<SourceItem[]>(),

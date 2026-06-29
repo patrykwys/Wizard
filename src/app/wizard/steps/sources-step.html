@@ -2,52 +2,143 @@
   <h2>Sources</h2>
   <p class="step-hint">Add one or more upstream sources for this product.</p>
 
-  @for (item of sourcesForm.items; track $index; let i = $index) {
-    <div class="source-card">
-      <div class="source-head" (click)="toggle(model().items[i].id)">
-        <span class="source-head-title">
-          {{ model().items[i].kind || 'New source' }}
-          @if (model().items[i].location) {
-            — {{ model().items[i].location }}
-          }
+  @for (item of sourcesForm.items; track model().items[$index].id; let i = $index) {
+    <div class="asset-card">
+      <div class="asset-head" (click)="toggleOpen(model().items[i].id)">
+        <span class="asset-caret" [class.is-open]="isOpen(model().items[i].id)">
+          <lucide-icon [img]="icons.ChevronRight" [size]="16" />
         </span>
-        <button type="button" class="btn-ghost" (click)="remove(i); $event.stopPropagation()">
-          Remove
-        </button>
+        <span class="asset-num">{{ i + 1 }}</span>
+        <span class="asset-title">{{ model().items[i].name || 'Unnamed Asset' }}</span>
+        @if (model().items[i].kind) {
+          <span class="asset-pill">{{ model().items[i].kind }}</span>
+        }
+        @if (model().items.length > 1) {
+          <button
+            type="button"
+            class="asset-remove"
+            (click)="$event.stopPropagation(); remove(i)"
+            aria-label="Remove asset"
+          >✕</button>
+        }
       </div>
 
       @if (isOpen(model().items[i].id)) {
-        <div class="source-body">
-          <label class="field">
-            <span class="field-label">Type</span>
-            <select class="field-select" [formField]="item.kind">
-              <option value="">{{ lookups.sourceKinds.isLoading() ? 'Loading…' : 'Select a type…' }}</option>
-              @for (k of lookups.sourceKinds.value(); track k) {
-                <option [value]="k">{{ k }}</option>
+        <div class="asset-body">
+        <label class="field">
+          <span class="field-label">Asset name</span>
+          <input class="field-input" [formField]="item.name" placeholder="e.g. Orders fact table" />
+          <span class="field-hint">Optional. A friendly name for this asset; defaults to “Unnamed Asset”.</span>
+        </label>
+
+        <label class="field">
+          <span class="field-label">Asset type</span>
+          <select class="field-select" [formField]="item.kind" (change)="resetPlatform(i)">
+            <option value="">{{ lookups.sourceKinds.isLoading() ? 'Loading…' : 'Select a type…' }}</option>
+            @for (k of lookups.sourceKinds.value(); track k) {
+              <option [value]="k">{{ k }}</option>
+            }
+          </select>
+          <span class="field-hint">The kind of asset — a database/table, API, file, dashboard, report, or dataset.</span>
+          <app-field-error [field]="item.kind" />
+        </label>
+
+        <label class="field">
+          <span class="field-label">Platform / Tool</span>
+          <select class="field-select" [formField]="item.platform">
+            @if (model().items[i].kind) {
+              <option value="">Select a platform…</option>
+              @for (p of lookups.platformsFor(model().items[i].kind); track p) {
+                <option [value]="p">{{ p }}</option>
               }
-            </select>
-            <app-field-error [field]="item.kind" />
-          </label>
+            } @else {
+              <option value="">Select a type first…</option>
+            }
+          </select>
+          <span class="field-hint">The platform or tool hosting this asset. Options depend on the asset type.</span>
+          <app-field-error [field]="item.platform" />
+        </label>
 
-          <label class="field">
-            <span class="field-label">Location</span>
-            <input class="field-input" [formField]="item.location" placeholder="URL or path" />
-            <app-field-error [field]="item.location" />
-          </label>
+        <label class="field">
+          <span class="field-label">Connection / URL / Path</span>
+          <input class="field-input" [formField]="item.location" placeholder="URL, connection string, or s3://bucket/…" />
+          <span class="field-hint">How approved consumers access this asset (shown only to approved users).</span>
+        </label>
 
-          <label class="field">
-            <span class="field-label">Note</span>
-            <input class="field-input" [formField]="item.note" />
-          </label>
-        </div>
+        <label class="field">
+          <span class="field-label">Note</span>
+          <input class="field-input" [formField]="item.note" />
+          <span class="field-hint">Optional context to help consumers understand this asset.</span>
+        </label>
+      </div>
       }
     </div>
   }
 
-  <button type="button" class="btn-secondary" (click)="add()">+ Add source</button>
+  <button type="button" class="btn-add-block" (click)="add()">+ Add another asset (data or BI)</button>
+
+  <div class="delivery">
+    <h3 class="delivery-title">Delivery &amp; refresh</h3>
+    <p class="step-hint">How this product is refreshed and the freshness it targets. Applies to the whole product.</p>
+
+    <div class="delivery-grid">
+      <label class="field">
+        <span class="field-label">Refresh frequency</span>
+        <select class="field-select" [formField]="deliveryForm.refreshFrequency">
+          <option value="">Select…</option>
+          @for (o of refreshFrequencies; track o) {
+            <option [value]="o">{{ o }}</option>
+          }
+        </select>
+      </label>
+
+      @if (isScheduled()) {
+        <label class="field">
+          <span class="field-label">Refresh method</span>
+          <select class="field-select" [formField]="deliveryForm.refreshMethod">
+            <option value="">Select…</option>
+            @for (o of refreshMethods; track o) {
+              <option [value]="o">{{ o }}</option>
+            }
+          </select>
+        </label>
+      }
+
+      <label class="field">
+        <span class="field-label">SLA target</span>
+        <select class="field-select" [formField]="deliveryForm.slaTarget">
+          <option value="">Select…</option>
+          @for (o of slaTargets; track o) {
+            <option [value]="o">{{ o }}</option>
+          }
+        </select>
+      </label>
+
+      <label class="field">
+        <span class="field-label">Typical data lag</span>
+        <select class="field-select" [formField]="deliveryForm.typicalDataLag">
+          <option value="">Select…</option>
+          @for (o of dataLags; track o) {
+            <option [value]="o">{{ o }}</option>
+          }
+        </select>
+      </label>
+    </div>
+  </div>
 
   <div class="step-actions">
-    <button type="button" class="btn-secondary" (click)="back()">Back</button>
-    <button type="button" class="btn-primary" (click)="next()">Next</button>
+    <button type="button" class="btn-secondary" (click)="back()">
+      <lucide-icon [img]="icons.ChevronLeft" [size]="16" />
+      Back
+    </button>
+    <button
+      type="button"
+      class="btn-primary"
+      [disabled]="sourcesForm().invalid()"
+      (click)="next()"
+    >
+      Next
+      <lucide-icon [img]="icons.ChevronRight" [size]="16" />
+    </button>
   </div>
 </section>

@@ -5,7 +5,10 @@
   <div class="review-block">
     <div class="review-block-head">
       <strong>Identify</strong>
-      <button type="button" class="btn-ghost" (click)="edit('identify')">Edit</button>
+      <button type="button" class="btn-edit" (click)="edit('identify')">
+        <lucide-icon [img]="icons.SquarePen" [size]="14" />
+        Edit
+      </button>
     </div>
     <div class="review-row">
       <span class="review-key">Application ID</span>
@@ -26,36 +29,69 @@
   <div class="review-block">
     <div class="review-block-head">
       <strong>Basic info</strong>
-      <button type="button" class="btn-ghost" (click)="edit('basic')">Edit</button>
+      <button type="button" class="btn-edit" (click)="edit('basic')">
+        <lucide-icon [img]="icons.SquarePen" [size]="14" />
+        Edit
+      </button>
     </div>
-    <div class="review-row"><span class="review-key">Name</span><span>{{ store.draft().basic.name || '—' }}</span></div>
-    <div class="review-row"><span class="review-key">Type</span><span>{{ store.draft().basic.type || '—' }}</span></div>
-    <div class="review-row"><span class="review-key">Creator</span><span>{{ store.draft().basic.creator || '—' }}</span></div>
-    <div class="review-row"><span class="review-key">Ownership</span><span>{{ store.draft().basic.ownership || '—' }}</span></div>
+    <div class="review-grid">
+      <div class="review-cell"><span class="review-key">Name</span><span>{{ store.draft().basic.name || '—' }}</span></div>
+      <div class="review-cell"><span class="review-key">Type</span><span>{{ store.draft().basic.type || '—' }}</span></div>
+      <div class="review-cell"><span class="review-key">Creator</span><span>{{ store.draft().basic.creator || '—' }}</span></div>
+      <div class="review-cell"><span class="review-key">Ownership</span><span>{{ store.draft().basic.ownership || '—' }}</span></div>
+    </div>
   </div>
 
   <div class="review-block">
     <div class="review-block-head">
       <strong>Description</strong>
-      <button type="button" class="btn-ghost" (click)="edit('description')">Edit</button>
+      <button type="button" class="btn-edit" (click)="edit('description')">
+        <lucide-icon [img]="icons.SquarePen" [size]="14" />
+        Edit
+      </button>
     </div>
     <div class="review-row"><span class="review-key">Description</span><span>{{ store.draft().description.description || '—' }}</span></div>
+    <div class="review-row">
+      <span class="review-key">Documents</span>
+      <span>
+        @if (store.draft().description.documents.length) {
+          {{ store.draft().description.documents.length }} link(s): {{ documentTitles() }}
+        } @else {
+          —
+        }
+      </span>
+    </div>
     <div class="review-row"><span class="review-key">Tags</span><span>{{ store.draft().description.tags.join(', ') || '—' }}</span></div>
-    <div class="review-row"><span class="review-key">URL</span><span>{{ store.draft().description.url || '—' }}</span></div>
   </div>
 
   <div class="review-block">
     <div class="review-block-head">
-      <strong>Sources</strong>
-      <button type="button" class="btn-ghost" (click)="edit('sources')">Edit</button>
+      <strong>Sources &amp; assets</strong>
+      <button type="button" class="btn-edit" (click)="edit('sources')">
+        <lucide-icon [img]="icons.SquarePen" [size]="14" />
+        Edit
+      </button>
     </div>
     @if (store.sourcesEntities().length) {
-      @for (s of store.sourcesEntities(); track s.id) {
-        <div class="review-row">
-          <span class="review-key">{{ s.kind || '—' }}</span>
-          <span>{{ s.location || '—' }}</span>
-        </div>
-      }
+      <div class="review-assets">
+        @for (s of store.sourcesEntities(); track s.id; let idx = $index) {
+          <div class="review-asset">
+            <div class="review-asset-head">
+              <span class="review-asset-num">{{ idx + 1 }}</span>
+              <span class="review-asset-kind">{{ s.name || 'Unnamed Asset' }}</span>
+              @if (assetMeta(s)) {
+                <span class="review-asset-meta">{{ assetMeta(s) }}</span>
+              }
+            </div>
+            @if (s.location) {
+              <div class="review-row"><span class="review-key">Location</span><span>{{ s.location }}</span></div>
+            }
+            @if (s.note) {
+              <div class="review-row"><span class="review-key">Note</span><span>{{ s.note }}</span></div>
+            }
+          </div>
+        }
+      </div>
     } @else {
       <div class="review-row"><span>—</span></div>
     }
@@ -63,23 +99,79 @@
 
   <div class="review-block">
     <div class="review-block-head">
+      <strong>Delivery &amp; refresh</strong>
+      <button type="button" class="btn-edit" (click)="edit('sources')">
+        <lucide-icon [img]="icons.SquarePen" [size]="14" />
+        Edit
+      </button>
+    </div>
+    <div class="review-row"><span class="review-key">Refresh frequency</span><span>{{ store.draft().delivery.refreshFrequency || '—' }}</span></div>
+    @if (store.draft().delivery.refreshFrequency === 'Scheduled') {
+      <div class="review-row"><span class="review-key">Refresh method</span><span>{{ store.draft().delivery.refreshMethod || '—' }}</span></div>
+    }
+    <div class="review-row"><span class="review-key">SLA target</span><span>{{ store.draft().delivery.slaTarget || '—' }}</span></div>
+    <div class="review-row"><span class="review-key">Typical data lag</span><span>{{ store.draft().delivery.typicalDataLag || '—' }}</span></div>
+  </div>
+
+  <div class="review-block">
+    <div class="review-block-head">
       <strong>Access</strong>
-      <button type="button" class="btn-ghost" (click)="edit('access')">Edit</button>
+      <button type="button" class="btn-edit" (click)="edit('access')">
+        <lucide-icon [img]="icons.SquarePen" [size]="14" />
+        Edit
+      </button>
     </div>
     <div class="review-row"><span class="review-key">Visibility</span><span>{{ store.draft().access.visibility }}</span></div>
     <div class="review-row"><span class="review-key">Classification</span><span>{{ store.draft().access.classification }}</span></div>
+    <div class="review-row"><span class="review-key">Compliance</span><span>{{ store.draft().access.compliance.join(', ') || '—' }}</span></div>
+    <div class="review-row">
+      <span class="review-key">Access process</span>
+      <span>{{ store.draft().access.accessProcess === 'approval' ? 'Requires approval' : 'Auto-approve' }}</span>
+    </div>
+    @if (store.draft().access.accessProcess === 'approval') {
+      <div class="review-row"><span class="review-key">AD group</span><span>{{ store.draft().access.adGroup || '—' }}</span></div>
+    }
     <div class="review-row"><span class="review-key">Tags</span><span>{{ store.draft().access.tags.join(', ') || '—' }}</span></div>
   </div>
 
+  @if (!submitted()) {
+    <label class="ack">
+      <input
+        type="checkbox"
+        [checked]="acknowledged()"
+        (change)="acknowledged.set($any($event.target).checked)"
+      />
+      <span>I confirm the information above is accurate and complete.</span>
+    </label>
+  }
+
   <div class="step-actions">
-    <button type="button" class="btn-secondary" (click)="edit('access')">Back</button>
-    <button
-      type="button"
-      class="btn-primary"
-      [disabled]="!store.allRequiredComplete()"
-      (click)="submit()"
-    >
-      Submit
+    <button type="button" class="btn-secondary" (click)="edit('access')">
+      <lucide-icon [img]="icons.ChevronLeft" [size]="16" />
+      Back
     </button>
+    @if (submitted()) {
+      <button type="button" class="btn-secondary" (click)="startAnother()">Submit another</button>
+    } @else {
+      <button
+        type="button"
+        class="btn-primary"
+        [disabled]="!store.allRequiredComplete() || !acknowledged()"
+        (click)="submit()"
+      >
+        <lucide-icon [img]="icons.Check" [size]="16" />
+        Submit
+      </button>
+    }
   </div>
+
+  @if (submitted()) {
+    <div class="submission">
+      <div class="submission-head">
+        <span class="submission-title">Submitted payload</span>
+        <button type="button" class="btn-ghost" (click)="copyJson()">Copy JSON</button>
+      </div>
+      <pre class="submission-json">{{ submittedJson() }}</pre>
+    </div>
+  }
 </section>

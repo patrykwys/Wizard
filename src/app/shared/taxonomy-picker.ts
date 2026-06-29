@@ -2,13 +2,13 @@ import {
   ChangeDetectionStrategy,
   Component,
   computed,
-  ElementRef,
-  HostListener,
   inject,
   input,
   output,
   signal,
 } from '@angular/core';
+import { LucideAngularModule } from 'lucide-angular';
+import { ICONS } from './icons';
 import { LookupStore } from '../store/lookup.store';
 import { TaxonomyNode, TaxonomySelection } from '../models/product.model';
 
@@ -66,8 +66,15 @@ function matchLeaves(
 @Component({
   selector: 'app-taxonomy-picker',
   changeDetection: ChangeDetectionStrategy.OnPush,
+  imports: [LucideAngularModule],
   template: `
-    <div class="picker">
+    <div
+      #root
+      class="picker"
+      [class.is-open]="open()"
+      (keydown.escape)="open.set(false)"
+      (focusout)="onFocusOut($event, root)"
+    >
       <button type="button" class="picker-field" (click)="toggle()">
         @if (selection().length) {
           <span class="picker-chips">
@@ -85,7 +92,7 @@ function matchLeaves(
         } @else {
           <span class="picker-placeholder">Select taxonomy categories…</span>
         }
-        <span class="picker-caret" aria-hidden="true">▾</span>
+        <span class="picker-caret" aria-hidden="true"><lucide-icon [img]="icons.ChevronDown" [size]="16" /></span>
       </button>
 
       @if (open()) {
@@ -107,9 +114,11 @@ function matchLeaves(
                   type="button"
                   class="tree-row is-leaf"
                   [class.is-selected]="isSelected(leaf.id)"
+                  (mousedown)="$event.preventDefault()"
                   (click)="toggleSelect(leaf)"
                 >
                   <span class="tree-check" aria-hidden="true">{{ isSelected(leaf.id) ? '☑' : '☐' }}</span>
+                  <span class="tree-badge">L{{ leaf.path.length }}</span>
                   <span>{{ leaf.path.join(' › ') }}</span>
                 </button>
               } @empty {
@@ -123,13 +132,16 @@ function matchLeaves(
                   [class.is-leaf]="row.isLeaf"
                   [class.is-selected]="row.isLeaf && isSelected(row.id)"
                   [style.padding-left.px]="12 + row.depth * 18"
+                  (mousedown)="$event.preventDefault()"
                   (click)="row.isLeaf ? toggleSelect({ id: row.id, path: row.path }) : toggleExpand(row.id)"
                 >
                   @if (row.isLeaf) {
                     <span class="tree-check" aria-hidden="true">{{ isSelected(row.id) ? '☑' : '☐' }}</span>
+                    <span class="tree-badge">L{{ row.depth + 1 }}</span>
                     <span class="tree-label">{{ row.label }}</span>
                   } @else {
                     <span class="tree-caret" [class.is-open]="isExpanded(row.id)" aria-hidden="true">▸</span>
+                    <span class="tree-badge">L{{ row.depth + 1 }}</span>
                     <span class="tree-label is-branch">{{ row.label }}</span>
                   }
                 </button>
@@ -142,24 +154,8 @@ function matchLeaves(
   `,
   styles: [
     `
-      .picker { position: relative; display: block; }
-      .picker-field {
-        display: flex;
-        align-items: center;
-        gap: var(--space-4);
-        width: 100%;
-        min-height: var(--size-control-lg);
-        padding: var(--space-3) var(--space-6);
-        background: var(--color-field-bg);
-        border: 1px solid var(--color-border);
-        border-radius: var(--radius-field);
-        cursor: pointer;
-        transition: var(--transition-quick);
-      }
-      .picker-field:hover { border-color: var(--color-text-muted); }
       .picker-chips { display: flex; flex-wrap: wrap; gap: var(--space-3); flex: 1; }
       .picker-placeholder { flex: 1; text-align: left; color: var(--color-text-placeholder); }
-      .picker-caret { color: var(--color-text-secondary); }
       .taxonomy-filter { padding: var(--space-5); border-bottom: 1px solid var(--color-divider); }
       .taxonomy-list { max-height: 280px; overflow-y: auto; padding: var(--space-3); }
       .tree-row {
@@ -174,16 +170,28 @@ function matchLeaves(
       }
       .tree-row:hover { background: var(--color-surface-muted); }
       .tree-row.is-selected { background: var(--color-action-tint); color: var(--color-primary); }
+      .tree-row:focus-visible {
+        outline: var(--focus-outline-width) solid var(--color-focus);
+        outline-offset: calc(-1 * var(--focus-outline-width));
+      }
       .tree-caret { display: inline-block; transition: transform var(--duration-quick) var(--ease-standard); color: var(--color-text-secondary); }
       .tree-caret.is-open { transform: rotate(90deg); }
       .tree-check { color: var(--color-primary); }
+      .tree-badge {
+        flex: none;
+        font-size: var(--font-size-xs);
+        font-weight: var(--font-weight-semibold);
+        color: var(--color-info);
+        background: var(--color-info-tint);
+        padding: var(--space-1) var(--space-3);
+        border-radius: var(--radius-sm);
+      }
       .tree-label.is-branch { font-weight: var(--font-weight-semibold); }
-      .picker-empty { padding: var(--space-6); color: var(--color-text-secondary); font-size: var(--font-size-sm); }
     `,
   ],
 })
 export class TaxonomyPicker {
-  private readonly host = inject(ElementRef);
+  protected readonly icons = ICONS;
   private readonly lookups = inject(LookupStore);
 
   readonly selection = input<TaxonomySelection[]>([]);
@@ -236,9 +244,11 @@ export class TaxonomyPicker {
     this.selectionChange.emit(this.selection().filter((s) => s.id !== id));
   }
 
-  @HostListener('document:click', ['$event'])
-  protected onDocumentClick(event: Event): void {
-    if (this.open() && !this.host.nativeElement.contains(event.target)) {
+  // Close when focus leaves the widget — to another control or to empty space
+  // (relatedTarget null) — while staying open during tree interaction.
+  protected onFocusOut(event: FocusEvent, root: HTMLElement): void {
+    const next = event.relatedTarget as Node | null;
+    if (!next || !root.contains(next)) {
       this.open.set(false);
     }
   }

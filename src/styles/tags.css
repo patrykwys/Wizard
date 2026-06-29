@@ -1,0 +1,34 @@
+/* Free-text tag pills + the inline add row used by the tag input. */
+.tag-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-4);
+  margin-bottom: var(--space-4);
+}
+
+.tag {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-2) var(--space-5);
+  background: var(--color-action-tint);
+  color: var(--color-primary);
+  border-radius: var(--radius-pill);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+}
+
+.tag button {
+  color: var(--color-primary);
+  font-size: var(--font-size-lg);
+  line-height: 1;
+}
+
+.inline-add {
+  display: flex;
+  gap: var(--space-4);
+}
+
+.inline-add .field-input {
+  flex: 1;
+}

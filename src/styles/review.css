@@ -1,0 +1,26 @@
+/* Review step: one block per section, key/value rows. */
+.review-block {
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-inner);
+  padding: var(--space-7) var(--space-8);
+  margin-bottom: var(--space-6);
+}
+
+.review-block-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: var(--space-4);
+}
+
+.review-row {
+  display: flex;
+  gap: var(--space-4);
+  font-size: var(--font-size-base);
+  padding: var(--space-2) 0;
+}
+
+.review-key {
+  width: 140px;
+  color: var(--color-text-secondary);
+}

@@ -7,6 +7,7 @@
 
   <div class="field">
     <span class="field-label">Visibility</span>
+    <span class="field-hint">Who can discover this product and request access to it.</span>
     <div class="option-grid">
       <button
         type="button"
@@ -41,6 +42,7 @@
 
   <div class="field">
     <span class="field-label">Data classification</span>
+    <span class="field-hint">The sensitivity level that governs how this product must be handled.</span>
     <div class="option-grid">
       @for (c of classifications; track c) {
         <button
@@ -57,12 +59,85 @@
   </div>
 
   <div class="field">
+    <span class="field-label">Compliance / regulated data</span>
+    <span class="field-hint">Select any regulated data types this product contains — none, some, or all.</span>
+    <div class="chip-row">
+      @for (tag of complianceTags; track tag) {
+        <button
+          type="button"
+          class="chip-toggle"
+          [class.is-selected]="model().compliance.includes(tag)"
+          (click)="toggleCompliance(tag)"
+        >
+          {{ tag }}
+        </button>
+      }
+    </div>
+  </div>
+
+  <div class="field">
+    <span class="field-label">Access Request Process</span>
+    <span class="field-hint">What happens when someone requests access to this product.</span>
+
+    <div class="proc-list">
+      <button
+        type="button"
+        class="proc-card"
+        [class.is-selected]="model().accessProcess === 'approval'"
+        (click)="setAccessProcess('approval')"
+      >
+        <span class="proc-radio" [class.is-on]="model().accessProcess === 'approval'"></span>
+        <span class="proc-text">
+          <span class="proc-title">Requires Approval</span>
+          <span class="proc-desc">Access requests go to the product owner for review.</span>
+        </span>
+      </button>
+
+      @if (model().accessProcess === 'approval') {
+        <div class="proc-nested">
+          <span class="field-label">Associated AD Group</span>
+          <span class="field-hint">Select or type the Active Directory group that controls access to this data product.</span>
+          <app-ad-group-picker
+            [value]="model().adGroup"
+            (valueChange)="setAdGroup($event)"
+          />
+        </div>
+      }
+
+      <button
+        type="button"
+        class="proc-card"
+        [class.is-selected]="model().accessProcess === 'auto'"
+        (click)="setAccessProcess('auto')"
+      >
+        <span class="proc-radio" [class.is-on]="model().accessProcess === 'auto'"></span>
+        <span class="proc-text">
+          <span class="proc-title">Auto-approve (Self-service)</span>
+          <span class="proc-desc">Any authenticated user can access immediately — best for low-sensitivity public data.</span>
+        </span>
+      </button>
+    </div>
+  </div>
+
+  <div class="field">
     <span class="field-label">Tags</span>
     <app-tag-input [tags]="model().tags" (tagsChange)="setTags($event)" />
+    <span class="field-hint">Keywords that make this product easier to find in the catalog.</span>
   </div>
 
   <div class="step-actions">
-    <button type="button" class="btn-secondary" (click)="back()">Back</button>
-    <button type="button" class="btn-primary" (click)="next()">Next</button>
+    <button type="button" class="btn-secondary" (click)="back()">
+      <lucide-icon [img]="icons.ChevronLeft" [size]="16" />
+      Back
+    </button>
+    <button
+      type="button"
+      class="btn-primary"
+      [disabled]="accessForm().invalid()"
+      (click)="next()"
+    >
+      Next
+      <lucide-icon [img]="icons.ChevronRight" [size]="16" />
+    </button>
   </div>
 </section>

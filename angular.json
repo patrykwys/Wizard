@@ -53,7 +53,15 @@
               }
             ],
             "styles": [
-              "src/styles/index.css"
+              "src/styles/tokens.css",
+              "src/styles/document.css",
+              "src/styles/layout.css",
+              "src/styles/buttons.css",
+              "src/styles/forms.css",
+              "src/styles/cards.css",
+              "src/styles/tags.css",
+              "src/styles/pickers.css",
+              "src/styles/review.css"
             ]
           },
           "configurations": {

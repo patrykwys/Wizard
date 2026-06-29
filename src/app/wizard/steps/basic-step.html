@@ -1,21 +1,26 @@
 <section class="step">
   <h2>Basic info</h2>
-  <p class="step-hint">Core details about the product.</p>
+  <p class="step-hint">
+    Provide the core identifying information for your data product. This is how
+    others will find and recognize it in the catalog.
+  </p>
 
   <label class="field">
-    <span class="field-label">Name</span>
-    <input class="field-input" [formField]="basicForm.name" />
+    <span class="field-label">Product name</span>
+    <input class="field-input" [formField]="basicForm.name" placeholder="e.g. Customer 360 Analytics" />
+    <span class="field-hint">A clear, descriptive name that helps others understand what this data represents.</span>
     <app-field-error [field]="basicForm.name" />
   </label>
 
   <label class="field">
-    <span class="field-label">Type</span>
+    <span class="field-label">Product type</span>
     <select class="field-select" [formField]="basicForm.type">
-      <option value="">{{ lookups.productTypes.isLoading() ? 'Loading…' : 'Select a type…' }}</option>
+      <option value="">{{ lookups.productTypes.isLoading() ? 'Loading…' : 'Select a product type…' }}</option>
       @for (t of lookups.productTypes.value(); track t) {
         <option [value]="t">{{ t }}</option>
       }
     </select>
+    <span class="field-hint">The type of data product you are registering.</span>
     <app-field-error [field]="basicForm.type" />
   </label>
 
@@ -25,6 +30,7 @@
       [value]="model().creator"
       (valueChange)="setCreator($event)"
     />
+    <span class="field-hint">The person responsible for creating this data product.</span>
     <app-field-error [field]="basicForm.creator" />
   </label>
 
@@ -36,11 +42,23 @@
         <option [value]="o">{{ o }}</option>
       }
     </select>
+    <span class="field-hint">Who is accountable for this data product.</span>
     <app-field-error [field]="basicForm.ownership" />
   </label>
 
   <div class="step-actions">
-    <button type="button" class="btn-secondary" (click)="back()">Back</button>
-    <button type="button" class="btn-primary" (click)="next()">Next</button>
+    <button type="button" class="btn-secondary" (click)="back()">
+      <lucide-icon [img]="icons.ChevronLeft" [size]="16" />
+      Back
+    </button>
+    <button
+      type="button"
+      class="btn-primary"
+      [disabled]="basicForm().invalid()"
+      (click)="next()"
+    >
+      Next
+      <lucide-icon [img]="icons.ChevronRight" [size]="16" />
+    </button>
   </div>
 </section>

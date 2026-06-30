@@ -5,46 +5,62 @@
     others will find and recognize it in the catalog.
   </p>
 
-  <label class="field">
-    <span class="field-label">Product name</span>
-    <input class="field-input" [formField]="basicForm.name" placeholder="e.g. Customer 360 Analytics" />
-    <span class="field-hint">A clear, descriptive name that helps others understand what this data represents.</span>
-    <app-field-error [field]="basicForm.name" />
-  </label>
+  <div class="basic-grid">
+    <label class="field">
+      <span class="field-label">Product name</span>
+      <input class="field-input" [formField]="basicForm.name" placeholder="e.g. Customer 360 Analytics" />
+      <app-field-error [field]="basicForm.name" />
+    </label>
 
-  <label class="field">
-    <span class="field-label">Product type</span>
-    <select class="field-select" [formField]="basicForm.type">
-      <option value="">{{ lookups.productTypes.isLoading() ? 'Loading…' : 'Select a product type…' }}</option>
-      @for (t of lookups.productTypes.value(); track t) {
-        <option [value]="t">{{ t }}</option>
-      }
-    </select>
-    <span class="field-hint">The type of data product you are registering.</span>
-    <app-field-error [field]="basicForm.type" />
-  </label>
+    <label class="field">
+      <span class="field-label">Product type</span>
+      <select class="field-select" [formField]="basicForm.type">
+        <option value="">{{ lookups.productTypes.isLoading() ? 'Loading…' : 'Select a product type…' }}</option>
+        @for (t of lookups.productTypes.value(); track t) {
+          <option [value]="t">{{ t }}</option>
+        }
+      </select>
+      <app-field-error [field]="basicForm.type" />
+    </label>
 
-  <label class="field">
-    <span class="field-label">Data product creator</span>
-    <app-people-picker
-      [value]="model().creator"
-      (valueChange)="setCreator($event)"
-    />
-    <span class="field-hint">The person responsible for creating this data product.</span>
-    <app-field-error [field]="basicForm.creator" />
-  </label>
+    <label class="field">
+      <span class="field-label">App number</span>
+      <input class="field-input" [formField]="basicForm.appNumber" placeholder="e.g. APP-411231" />
+      <app-field-error [field]="basicForm.appNumber" />
+    </label>
 
-  <label class="field">
-    <span class="field-label">Ownership</span>
-    <select class="field-select" [formField]="basicForm.ownership">
-      <option value="">{{ lookups.ownership.isLoading() ? 'Loading…' : 'Select ownership…' }}</option>
-      @for (o of lookups.ownership.value(); track o) {
-        <option [value]="o">{{ o }}</option>
-      }
-    </select>
-    <span class="field-hint">Who is accountable for this data product.</span>
-    <app-field-error [field]="basicForm.ownership" />
-  </label>
+    <label class="field">
+      <span class="field-label">Data product creator</span>
+      <app-people-picker
+        [value]="model().creator"
+        (valueChange)="setCreator($event)"
+      />
+      <app-field-error [field]="basicForm.creator" />
+    </label>
+
+    <label class="field">
+      <span class="field-label">Product link</span>
+      <input class="field-input" [formField]="basicForm.productLink" placeholder="https://…" />
+      <app-field-error [field]="basicForm.productLink" />
+    </label>
+
+    <label class="field">
+      <span class="field-label">Version</span>
+      <input class="field-input" [formField]="basicForm.version" placeholder="e.g. 1.0.0" />
+      <app-field-error [field]="basicForm.version" />
+    </label>
+
+    <label class="field span-2">
+      <span class="field-label">Ownership</span>
+      <select class="field-select" [formField]="basicForm.ownership">
+        <option value="">{{ lookups.ownership.isLoading() ? 'Loading…' : 'Select ownership…' }}</option>
+        @for (o of lookups.ownership.value(); track o) {
+          <option [value]="o">{{ o }}</option>
+        }
+      </select>
+      <app-field-error [field]="basicForm.ownership" />
+    </label>
+  </div>
 
   <div class="step-actions">
     <button type="button" class="btn-secondary" (click)="back()">

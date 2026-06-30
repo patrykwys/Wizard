@@ -5,11 +5,11 @@ import {
   inject,
   linkedSignal,
 } from '@angular/core';
-import { form, FormField, required, submit } from '@angular/forms/signals';
+import { form, FormField, pattern, required, submit } from '@angular/forms/signals';
 import { LucideAngularModule } from 'lucide-angular';
 import { ICONS } from '../../shared/icons';
 import { injectDispatch } from '@ngrx/signals/events';
-import { Person } from '../../models/product.model';
+import { AssociateDto } from '../../models/product.model';
 import { LookupStore } from '../../store/lookup.store';
 import { ProductDraftStore } from '../../store/product-draft.store';
 import { wizardEvents } from '../../store/wizard.events';
@@ -21,6 +21,18 @@ import { PeoplePicker } from '../../shared/people-picker';
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [FormField, FieldError, PeoplePicker, LucideAngularModule],
   templateUrl: './basic-step.html',
+  styles: [
+    `
+      .basic-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        column-gap: var(--space-7);
+        row-gap: var(--space-8);
+      }
+      .basic-grid .field { margin-bottom: 0; }
+      .basic-grid .span-2 { grid-column: 1 / -1; }
+    `,
+  ],
 })
 export class BasicStep {
   protected readonly icons = ICONS;
@@ -35,8 +47,13 @@ export class BasicStep {
   protected readonly basicForm = form(this.model, (p) => {
     required(p.name, { message: 'Name is required' });
     required(p.type, { message: 'Type is required' });
+    required(p.appNumber, { message: 'App number is required' });
     required(p.creator, { message: 'Creator is required' });
     required(p.ownership, { message: 'Ownership is required' });
+    // Product link + version are optional; the link just has to look like a URL.
+    pattern(p.productLink, /^https?:\/\/.+/, {
+      message: 'Must start with http:// or https://',
+    });
   });
 
   // Autosave: push edits into the store on every change (pass-through ref).
@@ -51,8 +68,8 @@ export class BasicStep {
     });
   }
 
-  protected setCreator(person: Person): void {
-    this.model.update((m) => ({ ...m, creator: person.name }));
+  protected setCreator(associate: AssociateDto): void {
+    this.model.update((m) => ({ ...m, creator: associate.fullName }));
   }
 
   protected back(): void {

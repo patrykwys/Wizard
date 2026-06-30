@@ -1,5 +1,5 @@
 import { ChangeDetectionStrategy, Component, computed, inject } from '@angular/core';
-import { injectDispatch } from '@ngrx/signals/events';
+import { injectDispatch, provideDispatcher } from '@ngrx/signals/events';
 import { PAGES } from '../models/product.model';
 import { ProductDraftStore } from '../store/product-draft.store';
 import { wizardEvents } from '../store/wizard.events';

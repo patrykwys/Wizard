@@ -10,19 +10,18 @@
         Edit
       </button>
     </div>
-    <div class="review-row">
-      <span class="review-key">Application ID</span>
-      <span>{{ store.draft().identify.appId || '—' }}</span>
-    </div>
-    <div class="review-row">
-      <span class="review-key">Categories</span>
-      <span>
-        @if (store.draft().identify.categories.length) {
-          {{ identifyCategoryLabels() }}
-        } @else {
-          —
-        }
-      </span>
+    <div class="review-grid">
+      <div class="review-cell"><span class="review-key">Application ID</span><span>{{ store.draft().identify.appId || '—' }}</span></div>
+      <div class="review-cell span-2">
+        <span class="review-key">Categories</span>
+        <span>
+          @if (store.draft().identify.categories.length) {
+            {{ identifyCategoryLabels() }}
+          } @else {
+            —
+          }
+        </span>
+      </div>
     </div>
   </div>
 
@@ -37,8 +36,11 @@
     <div class="review-grid">
       <div class="review-cell"><span class="review-key">Name</span><span>{{ store.draft().basic.name || '—' }}</span></div>
       <div class="review-cell"><span class="review-key">Type</span><span>{{ store.draft().basic.type || '—' }}</span></div>
+      <div class="review-cell"><span class="review-key">App number</span><span>{{ store.draft().basic.appNumber || '—' }}</span></div>
       <div class="review-cell"><span class="review-key">Creator</span><span>{{ store.draft().basic.creator || '—' }}</span></div>
-      <div class="review-cell"><span class="review-key">Ownership</span><span>{{ store.draft().basic.ownership || '—' }}</span></div>
+      <div class="review-cell"><span class="review-key">Product link</span><span>{{ store.draft().basic.productLink || '—' }}</span></div>
+      <div class="review-cell"><span class="review-key">Version</span><span>{{ store.draft().basic.version || '—' }}</span></div>
+      <div class="review-cell span-2"><span class="review-key">Ownership</span><span>{{ store.draft().basic.ownership || '—' }}</span></div>
     </div>
   </div>
 
@@ -50,18 +52,20 @@
         Edit
       </button>
     </div>
-    <div class="review-row"><span class="review-key">Description</span><span>{{ store.draft().description.description || '—' }}</span></div>
-    <div class="review-row">
-      <span class="review-key">Documents</span>
-      <span>
-        @if (store.draft().description.documents.length) {
-          {{ store.draft().description.documents.length }} link(s): {{ documentTitles() }}
-        } @else {
-          —
-        }
-      </span>
+    <div class="review-grid">
+      <div class="review-cell span-2"><span class="review-key">Description</span><span>{{ store.draft().description.description || '—' }}</span></div>
+      <div class="review-cell span-2">
+        <span class="review-key">Documents</span>
+        <span>
+          @if (store.draft().description.documents.length) {
+            {{ store.draft().description.documents.length }} link(s): {{ documentTitles() }}
+          } @else {
+            —
+          }
+        </span>
+      </div>
+      <div class="review-cell span-2"><span class="review-key">Tags</span><span>{{ store.draft().description.tags.join(', ') || '—' }}</span></div>
     </div>
-    <div class="review-row"><span class="review-key">Tags</span><span>{{ store.draft().description.tags.join(', ') || '—' }}</span></div>
   </div>
 
   <div class="review-block">
@@ -83,11 +87,15 @@
                 <span class="review-asset-meta">{{ assetMeta(s) }}</span>
               }
             </div>
-            @if (s.location) {
-              <div class="review-row"><span class="review-key">Location</span><span>{{ s.location }}</span></div>
-            }
-            @if (s.note) {
-              <div class="review-row"><span class="review-key">Note</span><span>{{ s.note }}</span></div>
+            @if (s.location || s.note) {
+              <div class="review-grid">
+                @if (s.location) {
+                  <div class="review-cell"><span class="review-key">Location</span><span>{{ s.location }}</span></div>
+                }
+                @if (s.note) {
+                  <div class="review-cell span-2"><span class="review-key">Note</span><span>{{ s.note }}</span></div>
+                }
+              </div>
             }
           </div>
         }
@@ -105,12 +113,14 @@
         Edit
       </button>
     </div>
-    <div class="review-row"><span class="review-key">Refresh frequency</span><span>{{ store.draft().delivery.refreshFrequency || '—' }}</span></div>
-    @if (store.draft().delivery.refreshFrequency === 'Scheduled') {
-      <div class="review-row"><span class="review-key">Refresh method</span><span>{{ store.draft().delivery.refreshMethod || '—' }}</span></div>
-    }
-    <div class="review-row"><span class="review-key">SLA target</span><span>{{ store.draft().delivery.slaTarget || '—' }}</span></div>
-    <div class="review-row"><span class="review-key">Typical data lag</span><span>{{ store.draft().delivery.typicalDataLag || '—' }}</span></div>
+    <div class="review-grid">
+      <div class="review-cell"><span class="review-key">Refresh frequency</span><span>{{ store.draft().delivery.refreshFrequency || '—' }}</span></div>
+      @if (store.draft().delivery.refreshFrequency === 'Scheduled') {
+        <div class="review-cell"><span class="review-key">Refresh method</span><span>{{ store.draft().delivery.refreshMethod || '—' }}</span></div>
+      }
+      <div class="review-cell"><span class="review-key">SLA target</span><span>{{ store.draft().delivery.slaTarget || '—' }}</span></div>
+      <div class="review-cell"><span class="review-key">Typical data lag</span><span>{{ store.draft().delivery.typicalDataLag || '—' }}</span></div>
+    </div>
   </div>
 
   <div class="review-block">
@@ -121,17 +131,16 @@
         Edit
       </button>
     </div>
-    <div class="review-row"><span class="review-key">Visibility</span><span>{{ store.draft().access.visibility }}</span></div>
-    <div class="review-row"><span class="review-key">Classification</span><span>{{ store.draft().access.classification }}</span></div>
-    <div class="review-row"><span class="review-key">Compliance</span><span>{{ store.draft().access.compliance.join(', ') || '—' }}</span></div>
-    <div class="review-row">
-      <span class="review-key">Access process</span>
-      <span>{{ store.draft().access.accessProcess === 'approval' ? 'Requires approval' : 'Auto-approve' }}</span>
+    <div class="review-grid">
+      <div class="review-cell"><span class="review-key">Visibility</span><span>{{ store.draft().access.visibility }}</span></div>
+      <div class="review-cell"><span class="review-key">Classification</span><span>{{ store.draft().access.classification }}</span></div>
+      <div class="review-cell span-2"><span class="review-key">Compliance</span><span>{{ store.draft().access.compliance.join(', ') || '—' }}</span></div>
+      <div class="review-cell"><span class="review-key">Access process</span><span>{{ store.draft().access.accessProcess === 'approval' ? 'Requires approval' : 'Auto-approve' }}</span></div>
+      @if (store.draft().access.accessProcess === 'approval') {
+        <div class="review-cell"><span class="review-key">AD group</span><span>{{ store.draft().access.adGroup || '—' }}</span></div>
+      }
+      <div class="review-cell span-2"><span class="review-key">Tags</span><span>{{ store.draft().access.tags.join(', ') || '—' }}</span></div>
     </div>
-    @if (store.draft().access.accessProcess === 'approval') {
-      <div class="review-row"><span class="review-key">AD group</span><span>{{ store.draft().access.adGroup || '—' }}</span></div>
-    }
-    <div class="review-row"><span class="review-key">Tags</span><span>{{ store.draft().access.tags.join(', ') || '—' }}</span></div>
   </div>
 
   @if (!submitted()) {

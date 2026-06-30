@@ -41,7 +41,7 @@ import { LookupStore } from '../store/lookup.store';
           [attr.aria-expanded]="open()"
           [value]="query()"
           (input)="onInput($any($event.target).value)"
-          (focus)="open.set(true)"
+          (focus)="onFocus($event)"
           [placeholder]="placeholder()"
         />
         <span class="picker-caret" aria-hidden="true">
@@ -93,6 +93,16 @@ export class AdGroupPicker {
     params: () => this.searchTerm(),
     stream: ({ params }) => this.lookups.searchAdGroups(params),
   });
+
+  // Selecting all text on focus lets the user replace the chosen value by just
+  // typing — no manual highlight-and-delete.
+  protected onFocus(event: FocusEvent): void {
+    this.open.set(true);
+    const el = event.target;
+    if (el instanceof HTMLInputElement) {
+      el.select();
+    }
+  }
 
   protected onInput(text: string): void {
     this.query.set(text);

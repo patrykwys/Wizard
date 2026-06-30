@@ -8,11 +8,11 @@ import {
   withState,
 } from '@ngrx/signals';
 import { StorageService } from '../../shared/storage.service';
- 
+
 interface PersistenceState {
   lastSavedAt: string | null;
 }
- 
+
 /**
  * Reusable persistence mechanism. The store decides *when* to persist (which
  * events trigger it); this feature owns *how*: serialize the whole state via
@@ -50,4 +50,3 @@ export function withDraftPersistence(storageKey: string) {
     }),
   );
 }
- 

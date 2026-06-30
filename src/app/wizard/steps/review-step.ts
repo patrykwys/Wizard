@@ -8,6 +8,7 @@ import {
 import { injectDispatch } from '@ngrx/signals/events';
 import { LucideAngularModule } from 'lucide-angular';
 import {
+  DeliveryData,
   ProductDraft,
   ProductPage,
   SourceItem,
@@ -16,8 +17,11 @@ import { ProductDraftStore } from '../../store/product-draft.store';
 import { wizardEvents } from '../../store/wizard.events';
 import { ICONS } from '../../shared/icons';
 
-// Exactly what gets submitted: the whole draft plus the sources collection.
-type ProductSubmission = ProductDraft & { sources: SourceItem[] };
+// What gets submitted. Delivery is captured on the Sources page, so it nests
+// under `sources` alongside the assets — not as a sibling top-level key.
+type ProductSubmission = Omit<ProductDraft, 'delivery'> & {
+  sources: { assets: SourceItem[]; delivery: DeliveryData };
+};
 
 @Component({
   selector: 'app-review-step',
@@ -46,6 +50,7 @@ type ProductSubmission = ProductDraft & { sources: SourceItem[] };
         gap: var(--space-5) var(--space-7);
       }
       .review-cell { display: flex; flex-direction: column; gap: var(--space-1); }
+      .review-grid .span-2 { grid-column: 1 / -1; }
 
       .review-assets { display: flex; flex-direction: column; gap: var(--space-5); }
       .review-asset {
@@ -155,16 +160,19 @@ export class ReviewStep {
   }
 
   protected submit(): void {
-    const draft = this.store.draft();
+    const { delivery, ...rest } = this.store.draft();
     const payload: ProductSubmission = {
-      ...draft,
+      ...rest,
       description: {
-        ...draft.description,
-        documents: draft.description.documents.filter(
+        ...rest.description,
+        documents: rest.description.documents.filter(
           (d) => d.title.trim() || d.link.trim(),
         ),
       },
-      sources: this.store.sourcesEntities(),
+      sources: {
+        assets: this.store.sourcesEntities(),
+        delivery,
+      },
     };
     // A real app would POST `payload` here. For the POC, surface it.
     console.log('Submitting product registration:', payload);

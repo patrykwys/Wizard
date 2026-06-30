@@ -38,7 +38,10 @@ export interface IdentifyData {
 export interface BasicInfoData {
   name: string;
   type: string;
+  appNumber: string;
   creator: string;
+  productLink: string;
+  version: string;
   ownership: string;
 }
 
@@ -111,7 +114,7 @@ export interface ProductDraft {
 // Initial values: never null/undefined (Signal Forms requirement).
 export const INITIAL_DRAFT: ProductDraft = {
   identify: { appId: '', categories: [] },
-  basic: { name: '', type: '', creator: '', ownership: '' },
+  basic: { name: '', type: '', appNumber: '', creator: '', productLink: '', version: '', ownership: '' },
   description: { description: '', documents: [], tags: [] },
   delivery: INITIAL_DELIVERY,
   access: {
@@ -137,11 +140,18 @@ export interface TaxonomySelection {
   path: string[];
 }
 
-// A company user returned by the people-search API.
-export interface Person {
-  id: string;
-  name: string;
-  role: string;
+// A directory associate, as returned by the search API. The four core fields
+// are always present; the rest of the table's columns are optional in the UI
+// (the API always returns them, but most screens don't need them).
+export interface AssociateDto {
+  corpId: string;
+  fullName: string;
+  jobTitle: string;
+  preferredName: string;
+  businessUnit?: string;
+  groupName?: string;
+  email?: string;
+  // add any remaining associates columns here (optional in the UI)
 }
 
 // A product returned by the "Search products" lookup on the identify step.

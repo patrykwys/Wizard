@@ -1,7 +1,10 @@
 import { signalStore, withMethods, withProps } from '@ngrx/signals';
+import { inject } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
 import { rxResource } from '@angular/core/rxjs-interop';
 import { delay, Observable, of } from 'rxjs';
-import { Person, ProductHit, TaxonomyNode } from '../models/product.model';
+import { AssociateDto, ProductHit, TaxonomyNode } from '../models/product.model';
+import { environment } from '../../environments/environment';
 
 /**
  * App-wide reference data for dropdowns and pickers. Loaded once and cached
@@ -98,17 +101,6 @@ const TAXONOMY_TREE: TaxonomyNode[] = [
   },
 ];
 
-// Mock corporate directory. Search matches corporate id (e.g. g100231) or name.
-const PEOPLE: Person[] = [
-  { id: 'g100231', name: 'Sarah Chen', role: 'Senior Data Analyst' },
-  { id: 'g100412', name: 'James Park', role: 'Technical Lead' },
-  { id: 'g100876', name: 'Maria Garcia', role: 'Business Owner' },
-  { id: 'g101245', name: 'Amy Manning', role: 'Data Engineer' },
-  { id: 'g101888', name: 'Rishi de Klerk', role: 'Product Manager' },
-  { id: 'g102004', name: 'Tom Whelan', role: 'Data Steward' },
-  { id: 'g102119', name: 'Niamh Byrne', role: 'BI Developer' },
-];
-
 // Mock catalogue of already-registered products for the identify search.
 const PRODUCTS: ProductHit[] = [
   { appId: 'APP-411231', name: 'Financials & Accounting — Core Dataset', taxonomy: 'Financials & Accounting' },
@@ -146,7 +138,9 @@ export const LookupStore = signalStore(
       stream: () => of(TAXONOMY_TREE).pipe(delay(LATENCY)),
     }),
   })),
-  withMethods(() => ({
+  withMethods(() => {
+    const http = inject(HttpClient);
+    return {
     // Platform/Tool options for a given asset type (empty until a type is set).
     platformsFor(type: string): string[] {
       return PLATFORMS_BY_TYPE[type] ?? [];
@@ -159,18 +153,15 @@ export const LookupStore = signalStore(
         : [];
       return of(matches).pipe(delay(LATENCY));
     },
-    // Corporate id or name -> matching users. Parameterised, so the people
-    // picker drives this through its own rxResource keyed off the query.
-    searchPeople(query: string): Observable<Person[]> {
-      const needle = query.trim().toLowerCase();
-      const matches = needle
-        ? PEOPLE.filter(
-            (p) =>
-              p.id.toLowerCase().includes(needle) ||
-              p.name.toLowerCase().includes(needle),
-          )
-        : [];
-      return of(matches).pipe(delay(LATENCY));
+    // Corporate id or name -> matching associates, straight from the API.
+    searchPeople(query: string): Observable<AssociateDto[]> {
+      const q = query.trim();
+      if (!q) {
+        return of([]);
+      }
+      return http.get<AssociateDto[]>(`${environment.apiBaseUrl}/api/associates/search`, {
+        params: { q },
+      });
     },
     // Find existing products by Application ID and/or taxonomy category ids.
     searchProducts(appId: string, categoryIds: string[]): Observable<ProductHit[]> {
@@ -183,5 +174,6 @@ export const LookupStore = signalStore(
       void categoryIds;
       return of(matches).pipe(delay(LATENCY));
     },
-  })),
+    };
+  }),
 );
